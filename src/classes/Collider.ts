@@ -38,28 +38,7 @@ export class Collider {
   }
 
   public update(): void {
-    this.updatedTransform.setPosition({
-      x:
-        this.originalTransform.getPositionX() +
-        this.getParentTransform().getPositionX(),
-      y:
-        this.originalTransform.getPositionY() +
-        this.getParentTransform().getPositionY(),
-    });
-
-    this.updatedTransform.setRotation(
-      this.originalTransform.getRotation() +
-        this.getParentTransform().getRotation()
-    );
-
-    this.updatedTransform.setScale({
-      x:
-        this.originalTransform.getScaleX() +
-        this.getParentTransform().getScaleX(),
-      y:
-        this.originalTransform.getScaleY() +
-        this.getParentTransform().getScaleY(),
-    });
+    this.updateTransform();
   }
 
   public getBounds(): { x: number; y: number; width: number; height: number } {
@@ -98,5 +77,30 @@ export class Collider {
     context.strokeStyle = gameSettings.debugColor;
     context.lineWidth = 2;
     context.strokeRect(bounds.x, bounds.y, bounds.width, bounds.height);
+  }
+
+  private updateTransform(): void {
+    this.updatedTransform.setPosition({
+      x:
+        this.originalTransform.getPositionX() +
+        this.getParentTransform().getPositionX(),
+      y:
+        this.originalTransform.getPositionY() +
+        this.getParentTransform().getPositionY(),
+    });
+
+    this.updatedTransform.setRotation(
+      this.originalTransform.getRotation() +
+        this.getParentTransform().getRotation()
+    );
+
+    this.updatedTransform.setScale({
+      x:
+        this.originalTransform.getScaleX() +
+        this.getParentTransform().getScaleX(),
+      y:
+        this.originalTransform.getScaleY() +
+        this.getParentTransform().getScaleY(),
+    });
   }
 }

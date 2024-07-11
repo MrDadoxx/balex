@@ -2,6 +2,7 @@ import { Transform } from "./Transform";
 import { Sprite } from "./Sprite";
 import { Collider } from "./Collider";
 import { GameObjectOptions } from "../interfaces/GameObjectOptions";
+import { gameSettings } from "../gameSettings";
 
 export class GameObject {
   private sprite: Sprite;
@@ -9,14 +10,11 @@ export class GameObject {
   protected collider: Collider;
   protected colliders: Collider[];
   protected name: string = "GameObject";
-  protected context: CanvasRenderingContext2D;
+  protected context: CanvasRenderingContext2D | null;
 
-  constructor(
-    context: CanvasRenderingContext2D,
-    options: GameObjectOptions = {}
-  ) {
-    this.context = context;
-    this.sprite = new Sprite(options.imagePath || "", context);
+  constructor(options: GameObjectOptions = {}) {
+    this.context = gameSettings.context;
+    this.sprite = new Sprite(options.imagePath || "");
     this.collider = new Collider(() => this.transform, this);
     this.colliders = [this.collider];
 

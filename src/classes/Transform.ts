@@ -47,22 +47,6 @@ export class Transform {
     this.scale.y = scale.y;
   }
 
-  public setPositionX(positionX: number): void {
-    this.position.x = positionX;
-  }
-
-  public setPositionY(positionY: number): void {
-    this.position.y = positionY;
-  }
-
-  public setScaleX(scaleX: number): void {
-    this.scale.x = scaleX;
-  }
-
-  public setScaleY(scaleY: number): void {
-    this.scale.y = scaleY;
-  }
-
   public getPositionX(): number {
     return this.position.x;
   }

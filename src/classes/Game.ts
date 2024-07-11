@@ -1,47 +1,56 @@
+import { gameSettings } from "../gameSettings";
 import { Scene } from "./Scene";
 
 export class Game {
-  constructor(context: CanvasRenderingContext2D) {
-    this.context = context;
+  constructor() {
     this.startUpdateLoop();
     this.update();
+    document.title = gameSettings.gameName;
   }
 
   private scenes: Scene[] = [];
-  protected context: CanvasRenderingContext2D;
+  protected context: CanvasRenderingContext2D | null = gameSettings.context;
   private debugColliders: boolean = false;
 
   private startUpdateLoop(): void {
-    const animate = () => {
-      this.update();
-      this.context.clearRect(
-        0,
-        0,
-        this.context.canvas.width,
-        this.context.canvas.height
-      );
-
-      this.scenes.forEach((scene) => {
-        scene.getObjects().forEach((object) => {
-          if (object.has("update")) object.update();
+    if (this.context) {
+      const animate = () => {
+        this.update();
+        // @ts-ignore
+        this.context.clearRect(
+          0,
+          0,
           // @ts-ignore
-          if (object.has("draw")) object.draw();
+          this.context.canvas.width,
           // @ts-ignore
-          if (object.has("getController")) object.getController().update();
-          object.getColliders().forEach((collider) => {
-            if (this.debugColliders) {
-              collider.draw(this.context);
-            }
+          this.context.canvas.height
+        );
 
-            collider.update();
+        this.scenes.forEach((scene) => {
+          scene.getObjects().forEach((object) => {
+            if (object.has("update")) object.update();
+            // @ts-ignore
+            if (object.has("draw")) object.draw();
+            // @ts-ignore
+            if (object.has("getController")) object.getController().update();
+            object.getColliders().forEach((collider) => {
+              if (this.debugColliders) {
+                // @ts-ignore
+                collider.draw(this.context);
+              }
+
+              collider.update();
+            });
           });
         });
-      });
 
-      requestAnimationFrame(animate);
-    };
+        requestAnimationFrame(animate);
+      };
 
-    animate();
+      animate();
+    } else {
+      console.error("You must declare a context in gameSettings.context");
+    }
   }
 
   public update() {}

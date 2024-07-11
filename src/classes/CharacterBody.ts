@@ -12,11 +12,8 @@ export class CharacterBody extends GameObject {
   private floorCollider: Collider;
   protected name: string = "CharacterBody";
 
-  constructor(
-    context: CanvasRenderingContext2D,
-    options: CharacterBodyOptions = {}
-  ) {
-    super(context, options);
+  constructor(options: CharacterBodyOptions = {}) {
+    super(options);
     this.speed = options.speed ?? 1;
     this.jumpForce = options.jumpForce ?? 40;
     this.floorCollider = new Collider(() => this.transform, this);
@@ -28,7 +25,7 @@ export class CharacterBody extends GameObject {
     }
 
     this.collider.setEnabled(options.useDefaultCollision ?? true);
-    this.floorCollider.setEnabled(options.useDefaultCollision ?? true)
+    this.floorCollider.setEnabled(options.useDefaultCollision ?? true);
     this.floorCollider.getTransform().setPosition({ x: 7, y: 300 });
     this.floorCollider.getTransform().setScale({ x: 1, y: -0.9 });
   }

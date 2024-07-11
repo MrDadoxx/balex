@@ -5,25 +5,27 @@ import { CharacterBody } from "./classes/CharacterBody";
 import { CollisionLayer } from "./classes/CollisionLayer";
 import { GameObject } from "./classes/GameObject";
 import { Transform } from "./classes/Transform";
+import { gameSettings } from "./gameSettings";
 
 const $canvas = document.getElementById("gameCanvas") as HTMLCanvasElement;
 const context = $canvas.getContext("2d");
+gameSettings.context = context;
 
 if (context) {
-  const game = new Game(context);
+  const game = new Game();
   const scene = new Scene();
-  const background = new GameObject(context, {
+  const background = new GameObject({
     imagePath: "src/assets/sprites/landscape.jpg",
   });
 
-  const player = new CharacterBody(context, {
+  const player = new CharacterBody({
     imagePath: "src/assets/sprites/cheche.png",
     speed: 20,
     jumpForce: 40,
     controllerType: "biWay",
   });
 
-  const floor = new GameObject(context, {
+  const floor = new GameObject({
     imagePath: "src/assets/sprites/grass.jpg",
   });
 
@@ -33,6 +35,7 @@ if (context) {
     player.getColliders()[1],
   ]);
 
+  game.enableCollidersDebug();
   game.addScene([scene]);
   scene.addObject([background, player, floor, collisionLayer]);
 
