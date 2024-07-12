@@ -1,20 +1,26 @@
-export class Input {
-  constructor() {
+import { GameObjectOptions } from "../interfaces/GameObjectOptions";
+import { GameObject } from "./GameObject";
+
+export class Input extends GameObject {
+  constructor(options: GameObjectOptions = {}) {
+    super();
     document.addEventListener("keydown", (event) => this._onKeyDown(event));
     document.addEventListener("keyup", (event) => this._onKeyUp(event));
+
+    this.name = options.name ?? "Input";
   }
 
-  private keysDown: Set<KeyCodes> = new Set();
+  private _keysDown: Set<KeyCodes> = new Set();
   public onKeyDown: (keyCode: KeyCodes) => void = () => {};
 
   public isKeyDown(keyCode: KeyCodes): boolean {
-    return this.keysDown.has(keyCode);
+    return this._keysDown.has(keyCode);
   }
 
   private _onKeyDown(event: KeyboardEvent): void {
     const keyCode = KeyCodes[event.code as keyof typeof KeyCodes];
     if (keyCode !== undefined) {
-      this.keysDown.add(keyCode);
+      this._keysDown.add(keyCode);
     }
     event.preventDefault();
 
@@ -24,7 +30,7 @@ export class Input {
   private _onKeyUp(event: KeyboardEvent): void {
     const keyCode = KeyCodes[event.code as keyof typeof KeyCodes];
     if (keyCode !== undefined) {
-      this.keysDown.delete(keyCode);
+      this._keysDown.delete(keyCode);
     }
     event.preventDefault();
   }

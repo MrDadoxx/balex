@@ -1,17 +1,31 @@
 import { gameSettings } from "../gameSettings";
+import { SpriteOptions } from "../interfaces/SpriteOptions";
+import { GameObject } from "./GameObject";
 import { Transform } from "./Transform";
 
-export class Sprite {
-  constructor(imagePath: string) {
-    this.image = new Image();
-    this.image.src = imagePath;
+export class Sprite extends GameObject {
+  constructor(imagePath: string, options: SpriteOptions = {}) {
+    super();
+    this._image = new Image();
+    this._image.src = imagePath;
+    this.name = options.name ?? "Sprite";
+    this._visible = options.visible ?? true;
   }
 
-  private image: HTMLImageElement;
-  private context: CanvasRenderingContext2D | null = gameSettings.context;
+  protected context: CanvasRenderingContext2D | null = gameSettings.context;
+  private _visible: boolean;
+  private _image: HTMLImageElement;
+
+  public isVisible(): boolean {
+    return this._visible;
+  }
+
+  public setVisible(visible: boolean): void {
+    this._visible = visible;
+  }
 
   public getImagePath(): string {
-    return this.image.src;
+    return this._image.src;
   }
 
   public draw(transform: Transform): void {
@@ -22,15 +36,15 @@ export class Sprite {
     if (this.context) {
       this.context.save();
       this.context.translate(
-        x + this.image.width / 2,
-        y + this.image.height / 2
+        x + this._image.width / 2,
+        y + this._image.height / 2
       );
       this.context.rotate(rotation * (Math.PI / 180));
       this.context.scale(scaleX, scaleY);
       this.context.drawImage(
-        this.image,
-        -this.image.width / 2,
-        -this.image.height / 2
+        this._image,
+        -this._image.width / 2,
+        -this._image.height / 2
       );
       this.context.restore();
     }

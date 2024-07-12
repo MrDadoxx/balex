@@ -1,40 +1,45 @@
 import { Transform } from "./Transform";
 import { gameSettings } from "../gameSettings";
 import { GameObject } from "./GameObject";
+import { StaticBody } from "./StaticBody";
+import { ColliderOptions } from "../interfaces/ColliderOptions";
 
-export class Collider {
-  constructor(getParentTransform: () => Transform, parent: GameObject) {
-    this.originalTransform = new Transform();
-    this.updatedTransform = new Transform();
-    this.getParentTransform = getParentTransform;
-    this.parent = parent;
+export class Collider extends GameObject {
+  constructor(parent: StaticBody, options: ColliderOptions = {}) {
+    super();
+
+    this._updatedTransform = new Transform();
+    this._parent = parent;
+
+    this.name = options.name ?? "Collider";
+    this._enabled = options.enabled ?? true;
+    this._originalTransform = options.initialTransform ?? new Transform();
   }
 
-  private enabled: boolean = true;
-  private originalTransform: Transform;
-  private updatedTransform: Transform;
-  private getParentTransform: () => Transform;
-  private parent: GameObject;
-  private colliding: boolean = false;
+  private _enabled: boolean;
+  private _originalTransform: Transform;
+  private _updatedTransform: Transform;
+  private _parent: StaticBody;
+  private _colliding: boolean = false;
 
   public setTransform(transform: Transform): void {
-    this.originalTransform = transform;
+    this._originalTransform = transform;
   }
 
   public getTransform(): Transform {
-    return this.originalTransform;
+    return this._originalTransform;
   }
 
   public setEnabled(enabled: boolean): void {
-    this.enabled = enabled;
+    this._enabled = enabled;
   }
 
   public isEnabled(): boolean {
-    return this.enabled;
+    return this._enabled;
   }
 
-  public getParent(): GameObject {
-    return this.parent;
+  public getParent(): StaticBody {
+    return this._parent;
   }
 
   public update(): void {
@@ -42,7 +47,7 @@ export class Collider {
   }
 
   public getBounds(): { x: number; y: number; width: number; height: number } {
-    const transform = this.updatedTransform;
+    const transform = this._updatedTransform;
     const position = transform.getPosition();
     const scale = transform.getScale();
     return {
@@ -54,11 +59,11 @@ export class Collider {
   }
 
   public isColliding(): boolean {
-    return this.colliding;
+    return this._colliding;
   }
 
   public setColliding(colliding: boolean): void {
-    this.colliding = colliding;
+    this._colliding = colliding;
   }
 
   public isCollidingWith(other: Collider): boolean {
@@ -80,27 +85,27 @@ export class Collider {
   }
 
   private updateTransform(): void {
-    this.updatedTransform.setPosition({
+    this._updatedTransform.setPosition({
       x:
-        this.originalTransform.getPositionX() +
-        this.getParentTransform().getPositionX(),
+        this._originalTransform.getPositionX() +
+        this._parent.getTransform().getPositionX(),
       y:
-        this.originalTransform.getPositionY() +
-        this.getParentTransform().getPositionY(),
+        this._originalTransform.getPositionY() +
+        this._parent.getTransform().getPositionY(),
     });
 
-    this.updatedTransform.setRotation(
-      this.originalTransform.getRotation() +
-        this.getParentTransform().getRotation()
+    this._updatedTransform.setRotation(
+      this._originalTransform.getRotation() +
+        this._parent.getTransform().getRotation()
     );
 
-    this.updatedTransform.setScale({
+    this._updatedTransform.setScale({
       x:
-        this.originalTransform.getScaleX() +
-        this.getParentTransform().getScaleX(),
+        this._originalTransform.getScaleX() +
+        this._parent.getTransform().getScaleX(),
       y:
-        this.originalTransform.getScaleY() +
-        this.getParentTransform().getScaleY(),
+        this._originalTransform.getScaleY() +
+        this._parent.getTransform().getScaleY(),
     });
   }
 }

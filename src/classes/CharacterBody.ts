@@ -1,84 +1,88 @@
 import { Vector2 } from "../interfaces/Vector2";
-import { GameObject } from "./GameObject";
 import { Controller } from "./Controller";
 import { Collider } from "./Collider";
 import { CharacterBodyOptions } from "../interfaces/CharacterBodyOptions";
+import { StaticBody } from "./StaticBody";
 
-export class CharacterBody extends GameObject {
-  private speed: number;
-  private jumpForce: number;
-  private velocity: Vector2 = { x: 0, y: 0 };
-  private controller: Controller;
-  private floorCollider: Collider;
-  protected name: string = "CharacterBody";
-
+export class CharacterBody extends StaticBody {
   constructor(options: CharacterBodyOptions = {}) {
     super(options);
-    this.speed = options.speed ?? 1;
-    this.jumpForce = options.jumpForce ?? 40;
-    this.floorCollider = new Collider(() => this.transform, this);
-    this.colliders = [this.collider, this.floorCollider];
-    this.controller = new Controller(this);
+    this._speed = options.speed ?? 1;
+    this._jumpForce = options.jumpForce ?? 40;
+    this._floorCollider = new Collider(this);
+    this._controller = new Controller(this);
+    this.colliders = [this.defaultCollider, this._floorCollider];
 
-    if (options.controllerType) {
-      this.controller.enableController(options.controllerType);
-    }
+    this.name = options.name ?? "CharacterBody";
+    this._velocity = options.velocity ?? { x: 0, y: 0 };
+    this._controller.enableController(options.controllerType ?? null);
+    this.defaultCollider.setEnabled(options.useDefaultCollider ?? true);
+    this.defaultCollider.setEnabled(options.useDefaultCollider ?? true);
+    this._floorCollider.setEnabled(options.useDefaultCollider ?? true);
 
-    this.collider.setEnabled(options.useDefaultCollision ?? true);
-    this.floorCollider.setEnabled(options.useDefaultCollision ?? true);
-    this.floorCollider.getTransform().setPosition({ x: 7, y: 300 });
-    this.floorCollider.getTransform().setScale({ x: 1, y: -0.9 });
+    this._floorCollider.getTransform().setPosition({ x: 7, y: 300 });
+    this._floorCollider.getTransform().setScale({ x: 1, y: -0.9 });
+  }
+
+  private _speed: number;
+  private _jumpForce: number;
+  private _velocity: Vector2;
+  private _controller: Controller;
+  private _floorCollider: Collider;
+
+  public draw() {
+    this.sprite?.draw(this.transform);
   }
 
   public getJumpForce(): number {
-    return this.jumpForce;
+    return this._jumpForce;
   }
 
   public setJumpForce(jumpForce: number): void {
-    this.jumpForce = jumpForce;
+    this._jumpForce = jumpForce;
   }
 
   public getFloorCollider(): Collider {
-    return this.floorCollider;
+    return this._floorCollider;
   }
 
   public getSpeed(): number {
-    return this.speed;
+    return this._speed;
   }
 
   public setSpeed(speed: number): void {
-    this.speed = speed;
+    this._speed = speed;
   }
 
   public getVelocity(): Vector2 {
-    return this.velocity;
+    return this._velocity;
   }
 
   public getVelocityX(): number {
-    return this.velocity.x;
+    return this._velocity.x;
   }
 
   public getVelocityY(): number {
-    return this.velocity.y;
+    return this._velocity.y;
   }
 
   public setVelocity(velocity: Vector2): void {
-    this.velocity = velocity;
+    this._velocity = velocity;
   }
 
   public setVelocityX(velocityX: number): void {
-    this.velocity.x = velocityX;
+    this._velocity.x = velocityX;
   }
 
   public setVelocityY(velocityY: number): void {
-    this.velocity.y = velocityY;
+    this._velocity.y = velocityY;
   }
 
   public getController() {
-    return this.controller;
+    return this._controller;
   }
 
   public isOnFloor(): boolean {
-    return this.floorCollider.isColliding();
+    return this._floorCollider.isColliding();
   }
 }

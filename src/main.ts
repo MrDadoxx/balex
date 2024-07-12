@@ -6,6 +6,7 @@ import { CollisionLayer } from "./classes/CollisionLayer";
 import { GameObject } from "./classes/GameObject";
 import { Transform } from "./classes/Transform";
 import { gameSettings } from "./gameSettings";
+import { StaticBody } from "./classes/StaticBody";
 
 const $canvas = document.getElementById("gameCanvas") as HTMLCanvasElement;
 const context = $canvas.getContext("2d");
@@ -14,26 +15,28 @@ gameSettings.context = context;
 if (context) {
   const game = new Game();
   const scene = new Scene();
-  const background = new GameObject({
-    imagePath: "src/assets/sprites/landscape.jpg",
+  const background = new StaticBody({
+    spriteImagePath: "src/assets/sprites/landscape.jpg",
   });
 
   const player = new CharacterBody({
-    imagePath: "src/assets/sprites/cheche.png",
+    spriteImagePath: "src/assets/sprites/cheche.png",
     speed: 20,
     jumpForce: 40,
     controllerType: "biWay",
   });
 
-  const floor = new GameObject({
-    imagePath: "src/assets/sprites/grass.jpg",
+  const floor = new StaticBody({
+    spriteImagePath: "src/assets/sprites/grass.jpg",
   });
 
-  const collisionLayer = new CollisionLayer([
-    floor.getColliders()[0],
-    player.getColliders()[0],
-    player.getColliders()[1],
-  ]);
+  const collisionLayer = new CollisionLayer({
+    colliders: [
+      floor.getColliders()[0],
+      player.getColliders()[0],
+      player.getColliders()[1],
+    ],
+  });
 
   game.enableCollidersDebug();
   game.addScene([scene]);

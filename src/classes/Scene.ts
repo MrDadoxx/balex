@@ -1,22 +1,30 @@
-import { Object } from "../types/Object";
+import { GameObject } from "./GameObject";
+import { SceneOptions } from "../interfaces/SceneOptions";
 
-export class Scene {
-  private objects: Object[] = [];
+export class Scene extends GameObject {
+  constructor(options: SceneOptions = {}) {
+    super();
 
-  public addObject(gameObjects: Object[]): void {
+    this.name = options.name ?? "Scene";
+    this._objects = options.objects ?? [];
+  }
+
+  private _objects: GameObject[];
+
+  public addObject(gameObjects: GameObject[]): void {
     gameObjects.forEach((gameObject) => {
-      this.objects.push(gameObject);
+      this._objects.push(gameObject);
     });
   }
 
-  public getObjects(): Object[] {
-    return this.objects;
+  public getObjects(): GameObject[] {
+    return this._objects;
   }
 
-  public removeObject(object: Object): void {
-    const index = this.objects.indexOf(object);
+  public removeObject(object: GameObject): void {
+    const index = this._objects.indexOf(object);
     if (index !== -1) {
-      this.objects.splice(index, 1);
+      this._objects.splice(index, 1);
     } else {
       console.error("Scene not found in the game.");
     }

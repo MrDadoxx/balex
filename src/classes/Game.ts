@@ -1,16 +1,26 @@
 import { gameSettings } from "../gameSettings";
+import { GameObject } from "./GameObject";
 import { Scene } from "./Scene";
 
-export class Game {
+export class Game extends GameObject {
   constructor() {
+    super();
     this.startUpdateLoop();
-    this.update();
     document.title = gameSettings.gameName;
+
+    document.addEventListener("DOMContentLoaded", () => {
+      this._scenes.forEach((scene) => {
+        scene.getObjects().forEach((object) => {
+          object.init();
+        });
+      });
+    });
   }
 
-  private scenes: Scene[] = [];
+  private _scenes: Scene[] = [];
+  private _debugColliders: boolean = false;
   protected context: CanvasRenderingContext2D | null = gameSettings.context;
-  private debugColliders: boolean = false;
+  protected name: string = "Game";
 
   private startUpdateLoop(): void {
     if (this.context) {
@@ -26,21 +36,30 @@ export class Game {
           this.context.canvas.height
         );
 
-        this.scenes.forEach((scene) => {
+        this._scenes.forEach((scene) => {
           scene.getObjects().forEach((object) => {
-            if (object.has("update")) object.update();
-            // @ts-ignore
-            if (object.has("draw")) object.draw();
-            // @ts-ignore
-            if (object.has("getController")) object.getController().update();
-            object.getColliders().forEach((collider) => {
-              if (this.debugColliders) {
-                // @ts-ignore
-                collider.draw(this.context);
-              }
+            object.update();
 
-              collider.update();
-            });
+            if (object.has("draw") && !object.isClass("StaticBody")) {
+              // @ts-ignore
+              object.draw();
+            }
+
+            if (object.has("getController")) {
+              // @ts-ignore
+              object.getController().update();
+            }
+
+            if (object.has("getColliders")) {
+              // @ts-ignore
+              object.getColliders().forEach((collider) => {
+                if (this._debugColliders) {
+                  collider.draw(this.context);
+                }
+
+                collider.update();
+              });
+            }
           });
         });
 
@@ -57,28 +76,28 @@ export class Game {
 
   public addScene(scenes: Scene[]): void {
     scenes.forEach((scene) => {
-      this.scenes.push(scene);
+      this._scenes.push(scene);
     });
   }
 
   public getScenes(): Scene[] {
-    return this.scenes;
+    return this._scenes;
   }
 
   public removeScene(scene: Scene): void {
-    const index = this.scenes.indexOf(scene);
+    const index = this._scenes.indexOf(scene);
     if (index !== -1) {
-      this.scenes.splice(index, 1);
+      this._scenes.splice(index, 1);
     } else {
       console.error("Scene not found in the game.");
     }
   }
 
   public enableCollidersDebug() {
-    this.debugColliders = true;
+    this._debugColliders = true;
   }
 
   public disableCollidersDebug() {
-    this.debugColliders = false;
+    this._debugColliders = false;
   }
 }

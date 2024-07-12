@@ -2,91 +2,103 @@ import { CharacterBody } from "./CharacterBody";
 import { Input, KeyCodes } from "./Input";
 import { gameSettings } from "../gameSettings";
 import { ControllerType } from "../types/ControllerType";
+import { GameObjectOptions } from "../interfaces/GameObjectOptions";
+import { GameObject } from "./GameObject";
 
-export class Controller {
-  private input: Input = new Input();
-  private controller: ControllerType = null;
-  private parent: CharacterBody;
-  private jumping: boolean = false;
+export class Controller extends GameObject {
+  constructor(_parent: CharacterBody, options: GameObjectOptions = {}) {
+    super();
+    this._parent = _parent;
 
-  constructor(parent: CharacterBody) {
-    this.parent = parent;
+    this.name = options.name ?? "Controller";
   }
 
+  private _input: Input = new Input();
+  private _controller: ControllerType = null;
+  private _parent: CharacterBody;
+  private _jumping: boolean = false;
+
   public moveRight() {
-    this.parent.getTransform().translate({ x: this.parent.getSpeed(), y: 0 });
+    this._parent.getTransform().translate({ x: this._parent.getSpeed(), y: 0 });
   }
 
   public moveLeft() {
-    this.parent.getTransform().translate({ x: -this.parent.getSpeed(), y: 0 });
+    this._parent
+      .getTransform()
+      .translate({ x: -this._parent.getSpeed(), y: 0 });
   }
 
   public moveUp() {
-    this.parent.getTransform().translate({ x: 0, y: -this.parent.getSpeed() });
+    this._parent
+      .getTransform()
+      .translate({ x: 0, y: -this._parent.getSpeed() });
   }
 
   public moveDown() {
-    this.parent.getTransform().translate({ x: 0, y: this.parent.getSpeed() });
+    this._parent.getTransform().translate({ x: 0, y: this._parent.getSpeed() });
   }
 
   public jump() {
-    this.parent.setVelocityY(-this.parent.getJumpForce());
-    this.jumping = true;
+    this._parent.setVelocityY(-this._parent.getJumpForce());
+    this._jumping = true;
   }
 
-  public isJumping(): boolean {
-    return this.jumping;
+  public is_jumping(): boolean {
+    return this._jumping;
   }
 
   public getActiveController() {
-    return this.controller;
+    return this._controller;
   }
 
   public disableActiveController() {
-    this.controller = null;
+    this._controller = null;
   }
 
   public enableController(controllerName: ControllerType) {
-    this.controller = controllerName;
+    this._controller = controllerName;
 
     if (controllerName === "fourWay") {
-      this.parent.getFloorCollider().setEnabled(false);
+      this._parent.getFloorCollider().setEnabled(false);
     } else if (controllerName === "biWay") {
-      this.parent.getFloorCollider().setEnabled(true);
+      this._parent.getFloorCollider().setEnabled(true);
     }
   }
 
   private handleBiWay() {
-    if (this.input.isKeyDown(KeyCodes.ArrowRight)) this.moveRight();
-    if (this.input.isKeyDown(KeyCodes.ArrowLeft)) this.moveLeft();
-    if (this.input.isKeyDown(KeyCodes.ArrowUp) && this.parent.isOnFloor()) this.jump();
+    if (this._input.isKeyDown(KeyCodes.ArrowRight)) this.moveRight();
+    if (this._input.isKeyDown(KeyCodes.ArrowLeft)) this.moveLeft();
+    if (this._input.isKeyDown(KeyCodes.ArrowUp) && this._parent.isOnFloor())
+      this.jump();
 
-    if (!this.parent.isOnFloor()) {
-      this.parent.setVelocityY(this.parent.getVelocityY() + gameSettings.gravity);
-    } else if (!this.isJumping()) {
-      this.parent.setVelocityY(0);
+    if (!this._parent.isOnFloor()) {
+      this._parent.setVelocityY(
+        this._parent.getVelocityY() + gameSettings.gravity
+      );
+    } else if (!this.is_jumping()) {
+      this._parent.setVelocityY(0);
     }
 
-    if (this.parent.isOnFloor()) {
-      this.jumping = false;
+    if (this._parent.isOnFloor()) {
+      this._jumping = false;
     }
 
-    const currentPosition = this.parent.getTransform().getPosition();
-    this.parent.getTransform().setPosition({
-      x: currentPosition.x + this.parent.getVelocityX(),
-      y: currentPosition.y + this.parent.getVelocityY(),
+    const currentPosition = this._parent.getTransform().getPosition();
+    this._parent.getTransform().setPosition({
+      x: currentPosition.x + this._parent.getVelocityX(),
+      y: currentPosition.y + this._parent.getVelocityY(),
     });
   }
 
   private handleFourWay() {
-    if (this.input.isKeyDown(KeyCodes.ArrowRight)) this.moveRight();
-    if (this.input.isKeyDown(KeyCodes.ArrowLeft)) this.moveLeft();
-    if (this.input.isKeyDown(KeyCodes.ArrowUp)) this.moveUp();
-    if (this.input.isKeyDown(KeyCodes.ArrowDown)) this.moveDown();
+    if (this._input.isKeyDown(KeyCodes.ArrowRight)) this.moveRight();
+    if (this._input.isKeyDown(KeyCodes.ArrowLeft)) this.moveLeft();
+    if (this._input.isKeyDown(KeyCodes.ArrowUp)) this.moveUp();
+    if (this._input.isKeyDown(KeyCodes.ArrowDown)) this.moveDown();
   }
 
   public update() {
-    if (this.controller === "fourWay") this.handleFourWay();
-    else if (this.controller === "biWay") this.handleBiWay();
+    if (this._controller === "fourWay") this.handleFourWay();
+    else if (this._controller === "biWay") this.handleBiWay();
   }
 }

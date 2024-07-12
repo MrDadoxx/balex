@@ -1,18 +1,14 @@
 import { Vector2 } from "../interfaces/Vector2";
+import { GameObject } from "./GameObject";
+import { TransformOptions } from "../interfaces/TransformOptions";
 
-export class Transform {
-  constructor({
-    position = { x: 0, y: 0 },
-    rotation = 0,
-    scale = { x: 1, y: 1 },
-  }: {
-    position?: Vector2;
-    rotation?: number;
-    scale?: Vector2;
-  } = {}) {
-    this.position = position;
-    this.rotation = rotation;
-    this.scale = scale;
+export class Transform extends GameObject {
+  constructor(options: TransformOptions = {}) {
+    super();
+    this.position = options.position ?? { x: 0, y: 0 };
+    this.scale = options.scale ?? { x: 1, y: 1 };
+    this.rotation = options.rotation ?? 0;
+    this.name = options.name ?? "Transform";
   }
 
   public position: Vector2;
