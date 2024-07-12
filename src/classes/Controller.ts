@@ -18,28 +18,32 @@ export class Controller extends GameObject {
   private _parent: CharacterBody;
   private _jumping: boolean = false;
 
-  public moveRight() {
-    this._parent.getTransform().translate({ x: this._parent.getSpeed(), y: 0 });
-  }
-
-  public moveLeft() {
+  public moveRight(deltaTime: number) {
     this._parent
       .getTransform()
-      .translate({ x: -this._parent.getSpeed(), y: 0 });
+      .translate({ x: this._parent.getSpeed() * deltaTime, y: 0 });
   }
 
-  public moveUp() {
+  public moveLeft(deltaTime: number) {
     this._parent
       .getTransform()
-      .translate({ x: 0, y: -this._parent.getSpeed() });
+      .translate({ x: -this._parent.getSpeed() * deltaTime, y: 0 });
   }
 
-  public moveDown() {
-    this._parent.getTransform().translate({ x: 0, y: this._parent.getSpeed() });
+  public moveUp(deltaTime: number) {
+    this._parent
+      .getTransform()
+      .translate({ x: 0, y: -this._parent.getSpeed() * deltaTime });
   }
 
-  public jump() {
-    this._parent.setVelocityY(-this._parent.getJumpForce());
+  public moveDown(deltaTime: number) {
+    this._parent
+      .getTransform()
+      .translate({ x: 0, y: this._parent.getSpeed() * deltaTime });
+  }
+
+  public jump(deltaTime: number) {
+    this._parent.setVelocityY(-this._parent.getJumpForce() * deltaTime);
     this._jumping = true;
   }
 
@@ -65,11 +69,11 @@ export class Controller extends GameObject {
     }
   }
 
-  private handleBiWay() {
-    if (this._input.isKeyDown(KeyCodes.ArrowRight)) this.moveRight();
-    if (this._input.isKeyDown(KeyCodes.ArrowLeft)) this.moveLeft();
+  private handleBiWay(deltaTime: number) {
+    if (this._input.isKeyDown(KeyCodes.ArrowRight)) this.moveRight(deltaTime);
+    if (this._input.isKeyDown(KeyCodes.ArrowLeft)) this.moveLeft(deltaTime);
     if (this._input.isKeyDown(KeyCodes.ArrowUp) && this._parent.isOnFloor())
-      this.jump();
+      this.jump(deltaTime);
 
     if (!this._parent.isOnFloor()) {
       this._parent.setVelocityY(
@@ -90,15 +94,15 @@ export class Controller extends GameObject {
     });
   }
 
-  private handleFourWay() {
-    if (this._input.isKeyDown(KeyCodes.ArrowRight)) this.moveRight();
-    if (this._input.isKeyDown(KeyCodes.ArrowLeft)) this.moveLeft();
-    if (this._input.isKeyDown(KeyCodes.ArrowUp)) this.moveUp();
-    if (this._input.isKeyDown(KeyCodes.ArrowDown)) this.moveDown();
+  private handleFourWay(deltaTime: number) {
+    if (this._input.isKeyDown(KeyCodes.ArrowRight)) this.moveRight(deltaTime);
+    if (this._input.isKeyDown(KeyCodes.ArrowLeft)) this.moveLeft(deltaTime);
+    if (this._input.isKeyDown(KeyCodes.ArrowUp)) this.moveUp(deltaTime);
+    if (this._input.isKeyDown(KeyCodes.ArrowDown)) this.moveDown(deltaTime);
   }
 
-  public update() {
-    if (this._controller === "fourWay") this.handleFourWay();
-    else if (this._controller === "biWay") this.handleBiWay();
+  public update(deltaTime: number) {
+    if (this._controller === "fourWay") this.handleFourWay(deltaTime);
+    else if (this._controller === "biWay") this.handleBiWay(deltaTime);
   }
 }

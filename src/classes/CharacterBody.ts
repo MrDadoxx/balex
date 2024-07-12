@@ -1,4 +1,4 @@
-import { Vector2 } from "../interfaces/Vector2";
+import { Vector2 } from "../types/Vector2";
 import { Controller } from "./Controller";
 import { Collider } from "./Collider";
 import { CharacterBodyOptions } from "../interfaces/CharacterBodyOptions";
@@ -12,16 +12,12 @@ export class CharacterBody extends StaticBody {
     this._floorCollider = new Collider(this);
     this._controller = new Controller(this);
     this.colliders = [this.defaultCollider, this._floorCollider];
-
     this.name = options.name ?? "CharacterBody";
     this._velocity = options.velocity ?? { x: 0, y: 0 };
     this._controller.enableController(options.controllerType ?? null);
-    this.defaultCollider.setEnabled(options.useDefaultCollider ?? true);
-    this.defaultCollider.setEnabled(options.useDefaultCollider ?? true);
     this._floorCollider.setEnabled(options.useDefaultCollider ?? true);
-
-    this._floorCollider.getTransform().setPosition({ x: 7, y: 300 });
-    this._floorCollider.getTransform().setScale({ x: 1, y: -0.9 });
+    this._floorCollider.getTransform().setPosition({ x: 7, y: 210 });
+    this._floorCollider.getTransform().setScale({ x: 1, y: 0 });
   }
 
   private _speed: number;

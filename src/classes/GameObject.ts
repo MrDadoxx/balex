@@ -10,7 +10,8 @@ export class GameObject {
   protected context: CanvasRenderingContext2D | null = gameSettings.context;
 
   public init(): void {}
-  public update(): void {}
+  // @ts-ignore
+  public update(deltaTime: number): void {}
 
   public isClass(className: string): boolean {
     return this.name === className;

@@ -1,14 +1,18 @@
 import { gameSettings } from "../gameSettings";
+import { GameOptions } from "../interfaces/GameOptions";
 import { GameObject } from "./GameObject";
 import { Scene } from "./Scene";
 
 export class Game extends GameObject {
-  constructor() {
+  constructor(options: GameOptions = {}) {
     super();
     this.startUpdateLoop();
-    document.title = gameSettings.gameName;
+    this.name = options.name ?? "Game";
+    this._scenes = options.scenes ?? [];
+    this._debugColliders = options.enableCollidersDebug ?? false;
 
     document.addEventListener("DOMContentLoaded", () => {
+      this.init();
       this._scenes.forEach((scene) => {
         scene.getObjects().forEach((object) => {
           object.init();
@@ -17,28 +21,29 @@ export class Game extends GameObject {
     });
   }
 
-  private _scenes: Scene[] = [];
-  private _debugColliders: boolean = false;
+  private _scenes: Scene[];
+  private _debugColliders: boolean;
   protected context: CanvasRenderingContext2D | null = gameSettings.context;
-  protected name: string = "Game";
+  protected name: string;
+  private _lastFrameTime: number = 0;
+  public deltaTime: number = 0;
 
   private startUpdateLoop(): void {
     if (this.context) {
-      const animate = () => {
-        this.update();
-        // @ts-ignore
-        this.context.clearRect(
+      const animate = (time: number) => {
+        this.deltaTime = (time - this._lastFrameTime) / 1000;
+        this._lastFrameTime = time;
+        this.update(this.deltaTime);
+        this.context!.clearRect(
           0,
           0,
-          // @ts-ignore
-          this.context.canvas.width,
-          // @ts-ignore
-          this.context.canvas.height
+          this.context!.canvas.width,
+          this.context!.canvas.height
         );
 
         this._scenes.forEach((scene) => {
           scene.getObjects().forEach((object) => {
-            object.update();
+            object.update(this.deltaTime);
 
             if (object.has("draw") && !object.isClass("StaticBody")) {
               // @ts-ignore
@@ -47,17 +52,17 @@ export class Game extends GameObject {
 
             if (object.has("getController")) {
               // @ts-ignore
-              object.getController().update();
+              object.getController().update(this.deltaTime);
             }
 
             if (object.has("getColliders")) {
               // @ts-ignore
               object.getColliders().forEach((collider) => {
                 if (this._debugColliders) {
-                  collider.draw(this.context);
+                  collider.draw(this.context!);
                 }
 
-                collider.update();
+                collider.update(this.deltaTime);
               });
             }
           });
@@ -66,13 +71,27 @@ export class Game extends GameObject {
         requestAnimationFrame(animate);
       };
 
-      animate();
+      requestAnimationFrame(animate);
     } else {
       console.error("You must declare a context in gameSettings.context");
     }
   }
 
-  public update() {}
+  public init() {
+    document.title = gameSettings.gameName;
+
+    const link: HTMLLinkElement =
+      document.querySelector("link[rel*='icon']") ||
+      document.createElement("link");
+
+    link.type = "image/x-icon";
+    link.rel = "icon";
+    link.href = gameSettings.gameIcon;
+    document.getElementsByTagName("head")[0].appendChild(link);
+  }
+
+  // @ts-ignore
+  public update(deltaTime: number) {}
 
   public addScene(scenes: Scene[]): void {
     scenes.forEach((scene) => {

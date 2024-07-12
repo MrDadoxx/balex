@@ -9,6 +9,12 @@ export class StaticBody extends GameObject {
     super();
     this.name = options.name ?? "StaticBody";
     this.sprite = new Sprite(options.spriteImagePath ?? "");
+    this.defaultCollider.setEnabled(options.useDefaultCollider ?? true);
+    this.defaultCollider.setEnabled(options.useDefaultCollider ?? true);
+    this.transform.setTransform(options.transform ?? new Transform());
+    this.defaultCollider
+      .getTransform()
+      .setTransform(options.defaultColliderTransform ?? new Transform());
   }
 
   protected sprite: Sprite | null = null;

@@ -1,4 +1,4 @@
-import { Vector2 } from "../interfaces/Vector2";
+import { Vector2 } from "../types/Vector2";
 import { GameObject } from "./GameObject";
 import { TransformOptions } from "../interfaces/TransformOptions";
 
@@ -14,6 +14,12 @@ export class Transform extends GameObject {
   public position: Vector2;
   public rotation: number;
   public scale: Vector2;
+
+  public setTransform(transform: Transform): void {
+    this.position = transform.getPosition();
+    this.rotation = transform.getRotation();
+    this.scale = transform.getScale();
+  }
 
   public translate(translation: Vector2): void {
     this.position.x += translation.x;

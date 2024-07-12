@@ -42,7 +42,8 @@ export class Collider extends GameObject {
     return this._parent;
   }
 
-  public update(): void {
+  // @ts-ignore
+  public update(deltaTime: number): void {
     this.updateTransform();
   }
 

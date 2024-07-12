@@ -1,14 +1,8 @@
-import { HexaColor } from "./types/HexaColor";
+import { GameSettings } from "./interfaces/GameSettings";
 
-interface gameSettings {
-  gameName: string;
-  debugColor: HexaColor;
-  gravity: number;
-  context: CanvasRenderingContext2D | null;
-}
-
-export const gameSettings: gameSettings = {
-  gameName: "Exodus Game",
+export const gameSettings: GameSettings = {
+  gameName: "Balex Game",
+  gameIcon: "path/to/img",
   debugColor: "#f00",
   gravity: 2,
   context: null,

@@ -3,31 +3,34 @@ import { Game } from "./classes/Game";
 import { Scene } from "./classes/Scene";
 import { CharacterBody } from "./classes/CharacterBody";
 import { CollisionLayer } from "./classes/CollisionLayer";
-import { GameObject } from "./classes/GameObject";
 import { Transform } from "./classes/Transform";
 import { gameSettings } from "./gameSettings";
 import { StaticBody } from "./classes/StaticBody";
+import { Timer } from "./classes/Timer";
 
 const $canvas = document.getElementById("gameCanvas") as HTMLCanvasElement;
 const context = $canvas.getContext("2d");
 gameSettings.context = context;
 
 if (context) {
-  const game = new Game();
-  const scene = new Scene();
-  const background = new StaticBody({
-    spriteImagePath: "src/assets/sprites/landscape.jpg",
+  const floor = new StaticBody({
+    spriteImagePath: "src/assets/sprites/grass.jpg",
+    defaultColliderTransform: new Transform({
+      position: { x: 0, y: 80 },
+      scale: { x: 14, y: 0 },
+    }),
+    transform: new Transform({
+      scale: { x: 6, y: 1 },
+      position: { x: 0, y: 700 },
+    }),
   });
 
   const player = new CharacterBody({
     spriteImagePath: "src/assets/sprites/cheche.png",
-    speed: 20,
-    jumpForce: 40,
+    speed: 900,
+    jumpForce: 3000,
     controllerType: "biWay",
-  });
-
-  const floor = new StaticBody({
-    spriteImagePath: "src/assets/sprites/grass.jpg",
+    defaultColliderTransform: new Transform({ scale: { x: 1.15, y: 2.05 } }),
   });
 
   const collisionLayer = new CollisionLayer({
@@ -38,22 +41,24 @@ if (context) {
     ],
   });
 
-  game.enableCollidersDebug();
-  game.addScene([scene]);
-  scene.addObject([background, player, floor, collisionLayer]);
+  const background = new StaticBody({
+    spriteImagePath: "src/assets/sprites/landscape.jpg",
+    useDefaultCollider: false,
+    transform: new Transform({
+      scale: { x: 0.4, y: 0.4 },
+      position: { x: -2000, y: -1220 },
+    }),
+  });
 
-  floor.getTransform().setScale({ x: 6, y: 0.4 });
-  floor.getTransform().setPosition({ x: 0, y: 700 });
-  floor
-    .getColliders()[0]
-    .setTransform(
-      new Transform({ position: { x: 0, y: 80 }, scale: { x: 14, y: 0 } })
-    );
+  const scene = new Scene({
+    objects: [background, player, floor, collisionLayer],
+  });
 
-  player
-    .getColliders()[0]
-    .setTransform(new Transform({ scale: { x: 1.15, y: 2.05 } }));
+  const timer = new Timer({ time: 2 });
+  const game = new Game({ scenes: [scene], enableCollidersDebug: true });
 
-  background.getTransform().setScale({ x: 0.4, y: 0.4 });
-  background.getTransform().setPosition({ x: -2000, y: -1220 });
+  timer.start();
+  timer.onTimerEnds = () => {
+    console.log("Timer terminado");
+  };
 }
