@@ -1,4 +1,4 @@
-# 🎮 **TypeScript Game Engine**
+# 🎮 **Exodus Game Engine**
 
 A TypeScript library where you can create simple games by using the Canvas element and built-in functions.
 
