@@ -54,11 +54,6 @@ if (context) {
     objects: [background, player, floor, collisionLayer],
   });
 
-  const timer = new Timer({ time: 2 });
+  const timer = new Timer({ time: 1, loop: true });
   const game = new Game({ scenes: [scene], enableCollidersDebug: true });
-
-  timer.start();
-  timer.onTimerEnds = () => {
-    console.log("Timer terminado");
-  };
 }
