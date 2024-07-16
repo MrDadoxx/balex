@@ -4,6 +4,7 @@ import { GameObject } from "./GameObject";
 export class Timer extends GameObject {
   constructor(options: TimerOptions = {}) {
     super();
+    this.enabled = options.enabled ?? true;
     this.name = options.name ?? "Timer";
     this._autostart = options.autostart ?? false;
     this._time = options.time ?? 1;

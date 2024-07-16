@@ -4,8 +4,10 @@ import { gameSettings } from "../gameSettings";
 export class GameObject {
   constructor(options: GameObjectOptions = {}) {
     this.name = options.name ?? "GameObject";
+    this.enabled = options.enabled ?? true;
   }
 
+  protected enabled: boolean;
   protected name: string;
   protected context: CanvasRenderingContext2D | null = gameSettings.context;
 
@@ -19,6 +21,10 @@ export class GameObject {
 
   public has(name: string): boolean {
     return name in this;
+  }
+
+  public isEnabled(): boolean {
+    return this.enabled;
   }
 
   public getName(): string {

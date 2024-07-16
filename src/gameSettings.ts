@@ -6,4 +6,5 @@ export const gameSettings: GameSettings = {
   debugColor: "#f00",
   gravity: 2,
   context: null,
+  debugColliders: true,
 };

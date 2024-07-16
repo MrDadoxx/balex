@@ -7,4 +7,5 @@ export interface StaticBodyOptions extends GameObjectOptions {
   transform?: Transform;
   useDefaultSprite?: boolean;
   spriteImagePath?: string;
+  spriteVisible?: boolean;
 }

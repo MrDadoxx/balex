@@ -5,6 +5,7 @@ import { TransformOptions } from "../interfaces/TransformOptions";
 export class Transform extends GameObject {
   constructor(options: TransformOptions = {}) {
     super();
+    this.enabled = options.enabled ?? true;
     this.position = options.position ?? { x: 0, y: 0 };
     this.scale = options.scale ?? { x: 1, y: 1 };
     this.rotation = options.rotation ?? 0;

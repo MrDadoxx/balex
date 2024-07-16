@@ -1,17 +1,23 @@
-import { GameObjectOptions } from "../interfaces/GameObjectOptions";
 import { GameObject } from "./GameObject";
+import { Action } from "./Action";
+import { InputOptions } from "../interfaces/InputOptions";
+import { KeyCodes } from "../enums/KeyCodes";
 
 export class Input extends GameObject {
-  constructor(options: GameObjectOptions = {}) {
+  constructor(options: InputOptions = {}) {
     super();
     document.addEventListener("keydown", (event) => this._onKeyDown(event));
     document.addEventListener("keyup", (event) => this._onKeyUp(event));
-
+    this.enabled = options.enabled ?? true;
     this.name = options.name ?? "Input";
+    this._actions = new Set(options.actions ?? []);
   }
 
+  private _actions: Set<Action>;
   private _keysDown: Set<KeyCodes> = new Set();
   public onKeyDown: (keyCode: KeyCodes) => void = () => {};
+  public onActionDown: (action: Action) => void = () => {};
+  public onActionUp: (action: Action) => void = () => {};
 
   public isKeyDown(keyCode: KeyCodes): boolean {
     return this._keysDown.has(keyCode);
@@ -21,9 +27,15 @@ export class Input extends GameObject {
     const keyCode = KeyCodes[event.code as keyof typeof KeyCodes];
     if (keyCode !== undefined) {
       this._keysDown.add(keyCode);
+      this._actions.forEach((action) => {
+        action.getKeys().forEach((key) => {
+          if (this._keysDown.has(key)) {
+            this.onActionDown(action);
+          }
+        });
+      });
     }
     event.preventDefault();
-
     this.onKeyDown(keyCode);
   }
 
@@ -31,119 +43,43 @@ export class Input extends GameObject {
     const keyCode = KeyCodes[event.code as keyof typeof KeyCodes];
     if (keyCode !== undefined) {
       this._keysDown.delete(keyCode);
+      this._actions.forEach((action) => {
+        let allKeysReleased = true;
+        action.getKeys().forEach((key) => {
+          if (this._keysDown.has(key)) {
+            allKeysReleased = false;
+          }
+        });
+        if (allKeysReleased) {
+          this.onActionUp(action);
+        }
+      });
     }
     event.preventDefault();
   }
-}
 
-export enum KeyCodes {
-  Backspace,
-  Tab,
-  Enter,
-  ShiftLeft,
-  ShiftRight,
-  ControlLeft,
-  ControlRight,
-  AltLeft,
-  AltRight,
-  Pause,
-  CapsLock,
-  Escape,
-  Space,
-  PageUp,
-  PageDown,
-  End,
-  Home,
-  ArrowLeft,
-  ArrowUp,
-  ArrowRight,
-  ArrowDown,
-  PrintScreen,
-  Insert,
-  Delete,
-  Digit0,
-  Digit1,
-  Digit2,
-  Digit3,
-  Digit4,
-  Digit5,
-  Digit6,
-  Digit7,
-  Digit8,
-  Digit9,
-  KeyA,
-  KeyB,
-  KeyC,
-  KeyD,
-  KeyE,
-  KeyF,
-  KeyG,
-  KeyH,
-  KeyI,
-  KeyJ,
-  KeyK,
-  KeyL,
-  KeyM,
-  KeyN,
-  KeyO,
-  KeyP,
-  KeyQ,
-  KeyR,
-  KeyS,
-  KeyT,
-  KeyU,
-  KeyV,
-  KeyW,
-  KeyX,
-  KeyY,
-  KeyZ,
-  MetaLeft,
-  MetaRight,
-  ContextMenu,
-  Numpad0,
-  Numpad1,
-  Numpad2,
-  Numpad3,
-  Numpad4,
-  Numpad5,
-  Numpad6,
-  Numpad7,
-  Numpad8,
-  Numpad9,
-  NumpadMultiply,
-  NumpadAdd,
-  NumpadSubtract,
-  NumpadDecimal,
-  NumpadDivide,
-  F1,
-  F2,
-  F3,
-  F4,
-  F5,
-  F6,
-  F7,
-  F8,
-  F9,
-  F10,
-  F11,
-  F12,
-  NumLock,
-  ScrollLock,
-  AudioVolumeMute,
-  AudioVolumeDown,
-  AudioVolumeUp,
-  LaunchMediaPlayer,
-  LaunchApplication1,
-  LaunchApplication2,
-  Semicolon,
-  Equal,
-  Comma,
-  Minus,
-  Period,
-  Slash,
-  Backquote,
-  BracketLeft,
-  Backslash,
-  BracketRight,
-  Quote,
+  public isActionDown(action: Action): boolean {
+    for (const key of action.getKeys()) {
+      if (this._keysDown.has(key)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  public addAction(action: Action): void {
+    this._actions.add(action);
+  }
+
+  public removeAction(action: Action): void {
+    if (this._actions.has(action)) {
+      this._actions.delete(action);
+    } else {
+      console.error("Action not found.");
+    }
+  }
+
+  public getActions(): Set<Action> {
+    return this._actions;
+  }
 }

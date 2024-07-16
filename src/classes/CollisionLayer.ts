@@ -5,7 +5,7 @@ import { GameObject } from "./GameObject";
 export class CollisionLayer extends GameObject {
   constructor(options: CollisionLayerOptions = {}) {
     super();
-
+    this.enabled = options.enabled ?? true;
     this._colliders = options.colliders ?? [];
     this.name = options.name ?? "CollisionLayer";
   }

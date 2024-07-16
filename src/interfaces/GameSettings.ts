@@ -6,4 +6,5 @@ export interface GameSettings {
   debugColor: HexaColor;
   gravity: number;
   context: CanvasRenderingContext2D | null;
+  debugColliders: boolean;
 }

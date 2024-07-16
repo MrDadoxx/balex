@@ -6,44 +6,43 @@ import { CollisionLayer } from "./classes/CollisionLayer";
 import { Transform } from "./classes/Transform";
 import { gameSettings } from "./gameSettings";
 import { StaticBody } from "./classes/StaticBody";
-import { Timer } from "./classes/Timer";
 
 const $canvas = document.getElementById("gameCanvas") as HTMLCanvasElement;
 const context = $canvas.getContext("2d");
 gameSettings.context = context;
 
 if (context) {
-  const floor = new StaticBody({
-    spriteImagePath: "src/assets/sprites/grass.jpg",
-    defaultColliderTransform: new Transform({
-      position: { x: 0, y: 80 },
-      scale: { x: 14, y: 0 },
-    }),
-    transform: new Transform({
-      scale: { x: 6, y: 1 },
-      position: { x: 0, y: 700 },
-    }),
-  });
+  // const floor = new StaticBody({
+  //   spriteImagePath: "src/assets/sprites/grass.jpg",
+  //   defaultColliderTransform: new Transform({
+  //     position: { x: 0, y: 80 },
+  //     scale: { x: 14, y: 0 },
+  //   }),
+  //   transform: new Transform({
+  //     scale: { x: 6, y: 1 },
+  //     position: { x: 0, y: 700 },
+  //   }),
+  // });
 
-  const player = new CharacterBody({
-    spriteImagePath: "src/assets/sprites/cheche.png",
-    speed: 900,
-    jumpForce: 3000,
-    controllerType: "biWay",
-    defaultColliderTransform: new Transform({ scale: { x: 1.15, y: 2.05 } }),
-  });
+  // const player = new CharacterBody({
+  //   spriteImagePath: "src/assets/sprites/cheche.png",
+  //   speed: 900,
+  //   jumpForce: 3000,
+  //   controllerType: "biWay",
+  //   defaultColliderTransform: new Transform({ scale: { x: 1.15, y: 2.05 } }),
+  // });
 
-  const collisionLayer = new CollisionLayer({
-    colliders: [
-      floor.getColliders()[0],
-      player.getColliders()[0],
-      player.getColliders()[1],
-    ],
-  });
+  // const collisionLayer = new CollisionLayer({
+  //   colliders: [
+  //     floor.getColliders()[0],
+  //     player.getColliders()[0],
+  //     player.getColliders()[1],
+  //   ],
+  // });
 
   const background = new StaticBody({
     spriteImagePath: "src/assets/sprites/landscape.jpg",
-    useDefaultCollider: false,
+    useDefaultCollider: true,
     transform: new Transform({
       scale: { x: 0.4, y: 0.4 },
       position: { x: -2000, y: -1220 },
@@ -51,9 +50,8 @@ if (context) {
   });
 
   const scene = new Scene({
-    objects: [background, player, floor, collisionLayer],
+    objects: [background],
   });
 
-  const timer = new Timer({ time: 1, loop: true });
   const game = new Game({ scenes: [scene], enableCollidersDebug: true });
 }

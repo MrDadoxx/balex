@@ -4,7 +4,7 @@ import { SceneOptions } from "../interfaces/SceneOptions";
 export class Scene extends GameObject {
   constructor(options: SceneOptions = {}) {
     super();
-
+    this.enabled = options.enabled ?? true;
     this.name = options.name ?? "Scene";
     this._objects = options.objects ?? [];
   }

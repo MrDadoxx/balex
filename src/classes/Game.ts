@@ -2,79 +2,72 @@ import { gameSettings } from "../gameSettings";
 import { GameOptions } from "../interfaces/GameOptions";
 import { GameObject } from "./GameObject";
 import { Scene } from "./Scene";
+import { Sprite } from "./Sprite";
 
 export class Game extends GameObject {
-  constructor(options: GameOptions = {}) {
-    super();
-    this.startUpdateLoop();
-    this.name = options.name ?? "Game";
-    this._scenes = options.scenes ?? [];
-    this._debugColliders = options.enableCollidersDebug ?? false;
-
-    document.addEventListener("DOMContentLoaded", () => {
-      this.init();
-      this._scenes.forEach((scene) => {
-        scene.getObjects().forEach((object) => {
-          object.init();
-        });
-      });
-    });
-  }
-
   private _scenes: Scene[];
-  private _debugColliders: boolean;
+  private _sprites: Sprite[] = [];
   protected context: CanvasRenderingContext2D | null = gameSettings.context;
-  protected name: string;
   private _lastFrameTime: number = 0;
   public deltaTime: number = 0;
 
+  constructor(options: GameOptions = {}) {
+    super(options);
+    this._scenes = options.scenes ?? [];
+
+    document.addEventListener("DOMContentLoaded", () => {
+      this.init();
+      this.initializeScenes();
+      this.startUpdateLoop();
+    });
+  }
+
   private startUpdateLoop(): void {
-    if (this.context) {
-      const animate = (time: number) => {
-        this.deltaTime = (time - this._lastFrameTime) / 1000;
-        this._lastFrameTime = time;
-        this.update(this.deltaTime);
-        this.context!.clearRect(
-          0,
-          0,
-          this.context!.canvas.width,
-          this.context!.canvas.height
-        );
+    if (!this.context) {
+      console.error("You must declare a context in gameSettings.context");
+      return;
+    }
 
-        this._scenes.forEach((scene) => {
-          scene.getObjects().forEach((object) => {
-            object.update(this.deltaTime);
+    const animate = (time: number) => {
+      this.deltaTime = (time - this._lastFrameTime) / 1000;
+      this._lastFrameTime = time;
+      this.update(this.deltaTime);
+      this.clearCanvas();
 
-            if (object.has("draw") && !object.isClass("StaticBody")) {
-              // @ts-ignore
-              object.draw();
-            }
-
-            if (object.has("getController")) {
-              // @ts-ignore
-              object.getController().update(this.deltaTime);
-            }
-
-            if (object.has("getColliders")) {
-              // @ts-ignore
-              object.getColliders().forEach((collider) => {
-                if (this._debugColliders) {
-                  collider.draw(this.context!);
-                }
-
-                collider.update(this.deltaTime);
-              });
-            }
-          });
+      this._scenes.forEach((scene) => {
+        scene.getObjects().forEach((object) => {
+          if (!object.isEnabled()) return;
+          object.update(this.deltaTime);
+          if (object.has("getSprite")) {
+            // @ts-ignore
+            object.getSprite().draw(object.getTransform(), this.context);
+          }
         });
-
-        requestAnimationFrame(animate);
-      };
+      });
 
       requestAnimationFrame(animate);
-    } else {
-      console.error("You must declare a context in gameSettings.context");
+    };
+
+    requestAnimationFrame(animate);
+  }
+
+  private clearCanvas(): void {
+    if (this.context) {
+      this.context.clearRect(
+        0,
+        0,
+        this.context.canvas.width,
+        this.context.canvas.height
+      );
     }
+  }
+
+  private initializeScenes(): void {
+    this._scenes.forEach((scene) => {
+      scene.getObjects().forEach((object) => {
+        object.init();
+      });
+    });
   }
 
   public init() {
@@ -91,12 +84,10 @@ export class Game extends GameObject {
   }
 
   // @ts-ignore
-  public update(deltaTime: number) {}
+  public update(deltaTime: number): void {}
 
   public addScene(scenes: Scene[]): void {
-    scenes.forEach((scene) => {
-      this._scenes.push(scene);
-    });
+    this._scenes.push(...scenes);
   }
 
   public getScenes(): Scene[] {
@@ -110,13 +101,5 @@ export class Game extends GameObject {
     } else {
       console.error("Scene not found in the game.");
     }
-  }
-
-  public enableCollidersDebug() {
-    this._debugColliders = true;
-  }
-
-  public disableCollidersDebug() {
-    this._debugColliders = false;
   }
 }

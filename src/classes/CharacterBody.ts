@@ -3,16 +3,18 @@ import { Controller } from "./Controller";
 import { Collider } from "./Collider";
 import { CharacterBodyOptions } from "../interfaces/CharacterBodyOptions";
 import { StaticBody } from "./StaticBody";
+import { gameSettings } from "../gameSettings";
 
 export class CharacterBody extends StaticBody {
   constructor(options: CharacterBodyOptions = {}) {
     super(options);
+    this.enabled = options.enabled ?? true;
+    this.name = options.name ?? "CharacterBody";
     this._speed = options.speed ?? 1;
     this._jumpForce = options.jumpForce ?? 40;
     this._floorCollider = new Collider(this);
     this._controller = new Controller(this);
     this.colliders = [this.defaultCollider, this._floorCollider];
-    this.name = options.name ?? "CharacterBody";
     this._velocity = options.velocity ?? { x: 0, y: 0 };
     this._controller.enableController(options.controllerType ?? null);
     this._floorCollider.setEnabled(options.useDefaultCollider ?? true);
@@ -26,8 +28,13 @@ export class CharacterBody extends StaticBody {
   private _controller: Controller;
   private _floorCollider: Collider;
 
-  public draw() {
-    this.sprite?.draw(this.transform);
+  public update(deltaTime: number): void {
+    this.clearCanvas();
+    this.sprite.draw(this.transform);
+    this.colliders.forEach((collider) => {
+      collider.update(deltaTime);
+      if (gameSettings.debugColliders) collider.draw(this.context);
+    });
   }
 
   public getJumpForce(): number {

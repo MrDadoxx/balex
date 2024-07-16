@@ -7,16 +7,14 @@ import { ColliderOptions } from "../interfaces/ColliderOptions";
 export class Collider extends GameObject {
   constructor(parent: StaticBody, options: ColliderOptions = {}) {
     super();
-
+    this.enabled = options.enabled ?? true;
     this._updatedTransform = new Transform();
     this._parent = parent;
-
     this.name = options.name ?? "Collider";
-    this._enabled = options.enabled ?? true;
     this._originalTransform = options.initialTransform ?? new Transform();
   }
 
-  private _enabled: boolean;
+  protected enabled: boolean;
   private _originalTransform: Transform;
   private _updatedTransform: Transform;
   private _parent: StaticBody;
@@ -31,11 +29,11 @@ export class Collider extends GameObject {
   }
 
   public setEnabled(enabled: boolean): void {
-    this._enabled = enabled;
+    this.enabled = enabled;
   }
 
   public isEnabled(): boolean {
-    return this._enabled;
+    return this.enabled;
   }
 
   public getParent(): StaticBody {

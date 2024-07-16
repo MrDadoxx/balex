@@ -1,20 +1,24 @@
-import { gameSettings } from "../gameSettings";
 import { SpriteOptions } from "../interfaces/SpriteOptions";
 import { GameObject } from "./GameObject";
+import { StaticBody } from "./StaticBody";
 import { Transform } from "./Transform";
 
 export class Sprite extends GameObject {
-  constructor(imagePath: string, options: SpriteOptions = {}) {
-    super();
+  private _image: HTMLImageElement;
+  private _visible: boolean;
+  private _parent: StaticBody;
+
+  constructor(
+    imagePath: string,
+    parent: StaticBody,
+    options: SpriteOptions = {}
+  ) {
+    super(options);
     this._image = new Image();
     this._image.src = imagePath;
-    this.name = options.name ?? "Sprite";
     this._visible = options.visible ?? true;
+    this._parent = parent;
   }
-
-  protected context: CanvasRenderingContext2D | null = gameSettings.context;
-  private _visible: boolean;
-  private _image: HTMLImageElement;
 
   public isVisible(): boolean {
     return this._visible;
@@ -24,29 +28,20 @@ export class Sprite extends GameObject {
     this._visible = visible;
   }
 
-  public getImagePath(): string {
-    return this._image.src;
+  public draw(transform: Transform): void {
+    if (!this.isVisible()) return;
+    const context = this._parent.getContext()
+    if (!context) return;
+    context.clearRect(0, 0, context.canvas.width, context.canvas.height);
+    context.save();
+    context.translate(transform.position.x, transform.position.y);
+    context.rotate((transform.rotation * Math.PI) / 180);
+    context.scale(transform.scale.x, transform.scale.y);
+    context.drawImage(this._image, 0, 0);
+    context.restore();
   }
 
-  public draw(transform: Transform): void {
-    const { x, y } = transform.position;
-    const { x: scaleX, y: scaleY } = transform.scale;
-    const rotation = transform.rotation;
-
-    if (this.context) {
-      this.context.save();
-      this.context.translate(
-        x + this._image.width / 2,
-        y + this._image.height / 2
-      );
-      this.context.rotate(rotation * (Math.PI / 180));
-      this.context.scale(scaleX, scaleY);
-      this.context.drawImage(
-        this._image,
-        -this._image.width / 2,
-        -this._image.height / 2
-      );
-      this.context.restore();
-    }
+  public getParent(): StaticBody {
+    return this._parent;
   }
 }
