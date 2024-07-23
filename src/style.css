@@ -1,6 +1,8 @@
 body {
-    background-color: #000;
-    overflow: hidden;
-    margin: 0;
-    padding: 0;
+  background-color: #000;
+  overflow: hidden;
+  margin: 0;
+  padding: 0;
+  width: 100vw;
+  height: 100vh;
 }

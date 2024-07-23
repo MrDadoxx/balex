@@ -5,6 +5,5 @@ export const gameSettings: GameSettings = {
   gameIcon: "path/to/img",
   debugColor: "#f00",
   gravity: 2,
-  context: null,
   debugColliders: true,
 };

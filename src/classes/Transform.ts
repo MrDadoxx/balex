@@ -41,6 +41,14 @@ export class Transform extends GameObject {
     this.position.y = position.y;
   }
 
+  public setPositionX(x: number): void {
+    this.position.x = x;
+  }
+
+  public setPositionY(y: number): void {
+    this.position.y = y;
+  }
+
   public setRotation(degrees: number): void {
     this.rotation = degrees;
   }
@@ -48,6 +56,14 @@ export class Transform extends GameObject {
   public setScale(scale: Vector2): void {
     this.scale.x = scale.x;
     this.scale.y = scale.y;
+  }
+
+  public setScaleX(x: number): void {
+    this.scale.x = x;
+  }
+
+  public setScaleY(y: number): void {
+    this.scale.y = y;
   }
 
   public getPositionX(): number {

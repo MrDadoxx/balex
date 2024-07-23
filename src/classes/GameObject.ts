@@ -9,7 +9,6 @@ export class GameObject {
 
   protected enabled: boolean;
   protected name: string;
-  protected context: CanvasRenderingContext2D | null = gameSettings.context;
 
   public init(): void {}
   // @ts-ignore
