@@ -17,7 +17,7 @@ export class Controller extends GameObject {
   }
 
   private _input: Input = new Input();
-  private _controller: ControllerType = null;
+  private _controllerType: ControllerType = null;
   private _parent: CharacterBody;
   private _jumping: boolean = false;
   private _options: ControllerOptions = {
@@ -66,8 +66,6 @@ export class Controller extends GameObject {
     this._input.addAction(this._moveDownAction);
     this._input.addAction(this._moveUpAction);
     this._input.addAction(this._jumpAction);
-    console.log("Controller options set", this.getOptions());
-    console.log(this._input.getActions());
   }
 
   public getOptions(): ControllerOptions {
@@ -108,15 +106,15 @@ export class Controller extends GameObject {
   }
 
   public getActiveController() {
-    return this._controller;
+    return this._controllerType;
   }
 
   public disableActiveController() {
-    this._controller = null;
+    this._controllerType = null;
   }
 
   public enableController(controllerName: ControllerType) {
-    this._controller = controllerName;
+    this._controllerType = controllerName;
 
     if (controllerName === "fourWay") {
       this._parent.getFloorCollider().setEnabled(false);
@@ -174,7 +172,7 @@ export class Controller extends GameObject {
   }
 
   public update(deltaTime: number) {
-    if (this._controller === "fourWay") this.handleFourWay(deltaTime);
-    else if (this._controller === "biWay") this.handleBiWay(deltaTime);
+    if (this._controllerType === "fourWay") this.handleFourWay(deltaTime);
+    else if (this._controllerType === "biWay") this.handleBiWay(deltaTime);
   }
 }

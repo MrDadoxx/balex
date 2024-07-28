@@ -1,31 +1,31 @@
 import { Transform } from "./Transform";
 import { gameSettings } from "../gameSettings";
-import { GameObject } from "./GameObject";
 import { StaticBody } from "./StaticBody";
 import { ColliderOptions } from "../interfaces/ColliderOptions";
+import { Body } from "./Body";
 
-export class Collider extends GameObject {
-  constructor(parent: StaticBody, options: ColliderOptions = {}) {
+export class Collider extends Body {
+  constructor(options: ColliderOptions) {
     super();
     this.enabled = options.enabled ?? true;
     this._updatedTransform = new Transform();
-    this._parent = parent;
+    this._parent = options.parent;
     this.name = options.name ?? "Collider";
-    this._originalTransform = options.initialTransform ?? new Transform();
+    this.transform = options.initialTransform ?? new Transform();
   }
 
   protected enabled: boolean;
-  private _originalTransform: Transform;
+  protected transform: Transform;
   private _updatedTransform: Transform;
   private _parent: StaticBody;
   private _colliding: boolean = false;
 
   public setTransform(transform: Transform): void {
-    this._originalTransform = transform;
+    this.transform = transform;
   }
 
   public getTransform(): Transform {
-    return this._originalTransform;
+    return this._updatedTransform;
   }
 
   public setEnabled(enabled: boolean): void {
@@ -41,8 +41,9 @@ export class Collider extends GameObject {
   }
 
   // @ts-ignore
-  public update(deltaTime: number): void {
-    this.updateTransform();
+  public update(): void {
+    const updatedTransform = this.getUpdatedTransform(this._parent);
+    this._updatedTransform = updatedTransform;
   }
 
   public getBounds(): { x: number; y: number; width: number; height: number } {
@@ -76,35 +77,11 @@ export class Collider extends GameObject {
     );
   }
 
-  public draw(context: CanvasRenderingContext2D): void {
+  public draw(): void {
     const bounds = this.getBounds();
+    const context: CanvasRenderingContext2D = this._parent.getContext();
     context.strokeStyle = gameSettings.debugColor;
     context.lineWidth = 2;
     context.strokeRect(bounds.x, bounds.y, bounds.width, bounds.height);
-  }
-
-  private updateTransform(): void {
-    this._updatedTransform.setPosition({
-      x:
-        this._originalTransform.getPositionX() +
-        this._parent.getTransform().getPositionX(),
-      y:
-        this._originalTransform.getPositionY() +
-        this._parent.getTransform().getPositionY(),
-    });
-
-    this._updatedTransform.setRotation(
-      this._originalTransform.getRotation() +
-        this._parent.getTransform().getRotation()
-    );
-
-    this._updatedTransform.setScale({
-      x:
-        this._originalTransform.getScaleX() +
-        this._parent.getTransform().getScaleX(),
-      y:
-        this._originalTransform.getScaleY() +
-        this._parent.getTransform().getScaleY(),
-    });
   }
 }
